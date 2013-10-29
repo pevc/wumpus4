@@ -1,4 +1,4 @@
 wumpus4
 =======
 
-Os caçadores de wumpus
+Os caçadores de wumpussddadas
