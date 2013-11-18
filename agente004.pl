@@ -13,3 +13,5 @@ run_agent(Pe,Ac):-
 
 agente004([_,_,_,_,_],goforward).
 
+huehuehuehue
+
