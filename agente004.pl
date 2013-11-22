@@ -109,9 +109,9 @@ adjacente((A,B),(X,Y)):- Bn is B-1,
 
 %Fazendo testes para verificar caminho de uma casa a outra.
 
-caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente ((A,B),(X,Y)).
-caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente ((A,B),(E,F)),reto(E,F),!,caminho((E,F),(X,Y)).
-maisproximo((A,B),(C,D),(E,F)):-adjacente ((A,B),(C,D)), caminho((C,D),(E,F)).
+caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente((A,B),(X,Y)).
+caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente((A,B),(E,F)),reto(E,F),!,caminho((E,F),(X,Y)).
+maisproximo((A,B),(C,D),(E,F)):-adjacente((A,B),(C,D)), caminho((C,D),(E,F)).
 
 % A ideia desse mais proximo eh verificar qual a casa mais proxima do agente que esteja no caminho, assim, ele apenas precisa se virar na direcao dele  e dar um 'go forward.
 
