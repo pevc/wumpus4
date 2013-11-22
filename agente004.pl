@@ -75,70 +75,45 @@ funcao_atualizador(X,Y):-
 					assert(lugares_inexplorados(X,Y)).
 funcao_atualizador(X,Y).
 
+reto(1,1).
+reto(1,2).
+reto(1,3).
+reto(1,4).
+reto(2,4).
+reto(3,4).
+reto(3,3).
+reto(3,2).
+reto(3,1).
+reto(4,1).
+
 %Verifica se uma casa eh adjacente a outra.
 
 adjacente((A,B),(X,Y)):- Al is A+1,
 						X = Al,
-						Y = B.
-
+						Y = B,
+						reto(Al,B).
 adjacente((A,B),(X,Y)):- An is A-1,
 						X = An,
-						Y = B.
+						Y = B,
+						reto(An,B).
 
 adjacente((A,B),(X,Y)):- Bl is B+1,
 						X = A,
-						Y = Bl.
+						Y = Bl,
+						reto(A,Bl).
 
 adjacente((A,B),(X,Y)):- Bn is B-1,
 						X = A,
-						Y = Bn.
+						Y = Bn,
+						reto(A,Bn).
 
 %Fazendo testes para verificar caminho de uma casa a outra.
 
-caminho((A,B),(X,Y)):- adjacente ((A,B),(X,Y)).
-caminho((A,B),(X,Y)):- adjacente ((A,B),(E,F)),!,caminho((E,F),(X,Y)).
+caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente ((A,B),(X,Y)).
+caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente ((A,B),(E,F)),reto(E,F),!,caminho((E,F),(X,Y)).
 maisproximo((A,B),(C,D),(E,F)):-adjacente ((A,B),(C,D)), caminho((C,D),(E,F)).
 
 % A ideia desse mais proximo eh verificar qual a casa mais proxima do agente que esteja no caminho, assim, ele apenas precisa se virar na direcao dele  e dar um 'go forward.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
