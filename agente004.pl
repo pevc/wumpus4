@@ -59,7 +59,17 @@ atualizador([no,no,_,_,_]):-
 					funcao_atualizador(Yn,X),
 					funcao_atualizador(Yl,X).
 
-%Se ele sentir um fedor ou um buraco, ele diz que a casa atual e segura e as outtas nao importantes.
+					retractall(caminho_horizontal(_)),
+					retractall(caminho_vertical(_))
+					assert(caminho_horizontal(0)),
+					assert(caminho_horizontal(1)),	
+					assert(caminho_vertical(0))
+					assert(caminho_vertical(1)).
+
+%Se ele sentir um fed
+
+
+or ou um buraco, ele diz que a casa atual e segura e as outtas nao importantes.
 autalizador([_,_,_,_,_]):-
 					retract(lugares_inexplorados(X,Y)),
 					assert(lugares_explorados(X,Y)).
@@ -86,31 +96,66 @@ reto(3,2).
 reto(3,1).
 reto(4,1).
 
-%Verifica se uma casa eh adjacente a outra.
+
 
 adjacente((A,B),(X,Y)):- Al is A+1,
 						X = Al,
 						Y = B,
-						reto(Al,B).
+						reto(Al,B),
+
+%Essa parte, assim como as partes mais a direita da ementa, significa que ele vai e nao volta. Preciso colocar na funcao algo que reseta e da assert toda vez que ele chamar o caminho, e tentar simplificar.
+
+         		   		caminho_horizontal(0),
+				         retractall(caminho_horizontal(_)),
+				         assert(caminho_horizontal(0)),
+				         retractall(caminho_vertical(_)),
+				         assert(caminho_vertical(1)),
+				         assert(caminho_vertical(0)).
+
 adjacente((A,B),(X,Y)):- An is A-1,
 						X = An,
 						Y = B,
-						reto(An,B).
+						reto(An,B),
+						
+						caminho_horizontal(1),
+						retractall(caminho_horizontal(_)),
+						assert(caminho_horizontal(1)),
+						retractall(caminho_vertical(_)),
+						assert(caminho_vertical(1)),
+						assert(caminho_vertical(0)).
 
 adjacente((A,B),(X,Y)):- Bl is B+1,
 						X = A,
 						Y = Bl,
-						reto(A,Bl).
+						reto(A,Bl),
+
+						caminho_vertical(0),
+						retractall(caminho_vertical(_)),
+						assert(caminho_vertical(0)),
+						retractall(caminho_horizontal(_)),
+						assert(caminho_horizontal(1)),
+						assert(caminho_horizontal(0)).
+
+
 
 adjacente((A,B),(X,Y)):- Bn is B-1,
 						X = A,
 						Y = Bn,
-						reto(A,Bn).
+						reto(A,Bn),
+
+						caminho_vertical(1),
+						retractall(caminho_vertical(_)),
+						assert(caminho_vertical(1)),
+						retractall(caminho_horizontal(_)),
+						assert(caminho_horizontal(1)),
+						assert(caminho_horizontal(0)).
+							
 
 %Fazendo testes para verificar caminho de uma casa a outra.
 
 caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente((A,B),(X,Y)).
 caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente((A,B),(E,F)),reto(E,F),!,caminho((E,F),(X,Y)).
+
 maisproximo((A,B),(C,D),(E,F)):-adjacente((A,B),(C,D)), caminho((C,D),(E,F)).
 
 % A ideia desse mais proximo eh verificar qual a casa mais proxima do agente que esteja no caminho, assim, ele apenas precisa se virar na direcao dele  e dar um 'go forward.
