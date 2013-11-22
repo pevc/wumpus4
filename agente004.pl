@@ -74,3 +74,72 @@ funcao_atualizador(X,Y):-
 					Y<5,
 					assert(lugares_inexplorados(X,Y)).
 funcao_atualizador(X,Y).
+
+%Verifica se uma casa eh adjacente a outra.
+
+adjacente((A,B),(X,Y)):- Al is A+1,
+						X = Al,
+						Y = B.
+
+adjacente((A,B),(X,Y)):- An is A-1,
+						X = An,
+						Y = B.
+
+adjacente((A,B),(X,Y)):- Bl is B+1,
+						X = A,
+						Y = Bl.
+
+adjacente((A,B),(X,Y)):- Bn is B-1,
+						X = A,
+						Y = Bn.
+
+%Fazendo testes para verificar caminho de uma casa a outra.
+
+caminho((A,B),(X,Y)):- adjacente ((A,B),(X,Y)).
+caminho((A,B),(X,Y)):- adjacente ((A,B),(E,F)),!,caminho((E,F),(X,Y)).
+maisproximo((A,B),(C,D),(E,F)):-adjacente ((A,B),(C,D)), caminho((C,D),(E,F)).
+
+% A ideia desse mais proximo eh verificar qual a casa mais proxima do agente que esteja no caminho, assim, ele apenas precisa se virar na direcao dele  e dar um 'go forward.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
