@@ -27,13 +27,23 @@ restart_agent:-
     init_agent.
 
 run_agent(Pe,Ac):-
-    agente004(Pe,Ac).
+    turno1(Pe,Ac).
 
-agente004([_,_,yes,_,_],grab):-
+turno1([_,_,yes,_,_],grab):-
 					turno(1),
 					retractall(ouro(_)),
 					assert(ouro(1)).
-agente004([_,_,_,_,_],climb):-
+turno1([_,_,_,_,_],climb):-
 					ouro(1).
 %esses dois verificam se ha ouro na casa 1/1, pega o ouro e sai.
+
+turno1([yes,_,_,_,_],climb):-
+						turno(1),
+						writeln('Sua morte vira outro dia, Wumpus, tenha certeza disso.').
+turno1([_,yes,_,_,_],climb):-
+						turno(1),
+						writeln('Isso eh demais para mim,Adeus!').
+%Essas duas, pr sua vez, verificam se ha perigo ao redor das casas e se haver fogem.
+
+
 
