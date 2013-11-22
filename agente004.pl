@@ -45,5 +45,32 @@ turno1([_,yes,_,_,_],climb):-
 						writeln('Isso eh demais para mim,Adeus!').
 %Essas duas, pr sua vez, verificam se ha perigo ao redor das casas e se haver fogem.
 
+%analise a situacao das casas ao redor de uma casa sem brisa e sem fedor, os testes atuais estao perfeitos...
+atualizador([no,no,_,_,_]):-
+					localizacao(X,Y),
+					Xn is X+1,
+					Xl is X-1,
+					Yn is Y+1,
+					Yl is Y-1,
+					retract(lugares_inexplorados(X,Y)),
+					assert(lugares_explorados(X,Y)),
+					funcao_atualizador(Xn,Y),
+					funcao_atualizador(Xl,Y),
+					funcao_atualizador(Yn,X),
+					funcao_atualizador(Yl,X).
 
+%Se ele sentir um fedor ou um buraco, ele diz que a casa atual e segura e as outtas nao importantes.
+autalizador([_,_,_,_,_]):-
+					retract(lugares_inexplorados(X,Y)),
+					assert(lugares_explorados(X,Y)).
 
+%essas tres servem para verificar se as casas ao lado existem e nao sao exploradas.
+funcao_atualizador(X,Y):-
+					lugares_explorados(X,Y).
+funcao_atualizador(X,Y):-
+					X>0,
+					X<5,
+					Y>0,
+					Y<5,
+					assert(lugares_inexplorados(X,Y)).
+funcao_atualizador(X,Y).
