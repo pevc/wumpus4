@@ -32,7 +32,9 @@ restart_agent:-
 run_agent(Pe,Ac):-
     pega_ouro(Pe,Ac);
 	tempo_limite(Pe),
-    correndo_tempo(Pe,Ac).
+    correndo_tempo(Pe,Ac),
+	turno1(Pe),
+    desistindo(Pe,Ac).
 pega_ouro([_,_,yes,_,_],grab):-
                                 ouro(O),
                                 On is O+1,
@@ -82,6 +84,17 @@ turno1(_).
 %Essas duas, pr sua vez, verificam se ha perigo ao redor das casas e se haver fogem.
 
 %analise a situacao das casas ao redor de uma casa sem brisa e sem fedor, os testes atuais estao perfeitos...
+desistindo(_,climb):-
+                      modo_fuga(1),
+                      localizacao(1,1).
+
+desistindo(_,Ac):-
+                  modo_fuga(1),
+                  localizacao(X,Y),
+                  proximacasa((X,Y),(A,B),(1,1)),
+                  !,
+                  acao((A,B),Ac).
+
 atualizador([no,no,_,_,_]):-
 					localizacao(X,Y),
 					Xn is X+1,
