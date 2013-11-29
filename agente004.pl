@@ -139,6 +139,79 @@ atualizador(_):-
                 assert(turno(Tn)).
 
 
+
+movimento(_,Ac):-
+                                localizacao(X,Y),
+                                casa_inexplorada(Lista),
+                                nth0(0,Lista,Proximo),
+                proximacasa((X,Y),(A,B),Proximo),
+                !,
+                acao((A,B),Ac).
+
+
+acao((C,_),turnright):-localizacao(X,_),
+                        X>C,
+                                angulo(3),
+                        retractall(angulo(_)),
+                        assert(angulo(2)).
+
+acao((C,_),turnleft):- localizacao(X,_),
+                        X>C,
+                               angulo(I),
+                        I<2,
+                        In is I+1,
+                        retractall(angulo(_)),
+                        assert(angulo(In)).
+
+acao((C,_),turnleft):- localizacao(X,_),
+                        X<C,
+                                    angulo(3),
+                        retractall(angulo(_)),
+                        assert(angulo(0)).
+
+acao((C,_),turnright):-localizacao(X,_),
+                        X<C,
+                            angulo(I),
+                        I>0,
+                        In is I-1,
+                        retractall(angulo(_)),
+                        assert(angulo(In)).
+
+	acao((_,D),turnright):-localizacao(_,Y),
+                        Y<D,
+                                angulo(I),
+                        I>1,
+                        In is I-1,
+                        retractall(angulo(_)),
+                        assert(angulo(In)).
+
+	acao((_,D),turnleft):- localizacao(_,Y),
+                        Y<D,
+                               angulo(0),
+                       retractall(angulo(_)),
+                        assert(angulo(1)).
+
+	acao((_,D),turnright):-  localizacao(_,Y),
+                        Y>D,
+                                angulo(0),
+                        retractall(angulo(_)),
+                        assert(angulo(3)).
+
+	acao((_,D),turnleft):-localizacao(_,Y),
+                        Y>D,
+                                 angulo(I),
+                        I<3,
+                        In is I+1,
+                        retractall(angulo(_)),
+                        assert(angulo(In)).
+
+	acao((_,_),goforward):-
+                                                atualizador_localizacao,
+                                                localizacao(X,Y),
+                                                casa_inexplorada(Lista),
+                                                delete(Lista,(X,Y),Novalista),
+                                                retractall(casa_inexplorada(_)),
+                                                assert(casa_inexplorada(Novalist                                                                                        a)).
 							
 caminho((A,B),(C,D)):-
                                          casa_adjacente((A,B),(C,D)),
