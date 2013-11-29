@@ -4,7 +4,8 @@
      		direcao/1, %Determina para onde você está olhando.
 			lugares_seguros/2, %Lugares que são seguros
 			lugares_inexplorados/2,%Lugares para explorar caso o caminho principal falhou
-			turno/1%contador de turno. O mais importante é o primeiro(fugir) e o 40(desistir de mais ouros)
+			turno/,1%contador de turno. O mais importante é o primeiro(fugir) e o 40(desistir de mais ouros)
+			modo_turno/1
 		]).
 
 
@@ -17,11 +18,13 @@ init_agent:-
 		retractall(lugares_inexplorados(_,_)),
 		retractall(turno(_)),
 		retractall(ouro(_)),
+		retractall(modo_fuga(_)),
 		assert(localizacao(1,1)),
 		assert(direcao(0)),
 		assert(lugares_inexplorados(1,1)),
 		assert(turno(1)),
-		assert(ouro(0)).
+		assert(ouro(0)),
+		assert(modo_fuga(0)).
 
 restart_agent:-
     init_agent.
