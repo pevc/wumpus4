@@ -1,31 +1,33 @@
 :- load_files([wumpus1]).
 :- use_module(library(lists)).
 :- dynamic([localizacao/2, %determina onde você está.
-     		direcao/1, %Determina para onde você está olhando.
-			lugares_seguros/2, %Lugares que são seguros
-			lugares_inexplorados/2,%Lugares para explorar caso o caminho principal falhou
-			turno/,1%contador de turno. O mais importante é o primeiro(fugir) e o 40(desistir de mais ouros)
-			modo_turno/1
-		]).
-
-
+            angulo/1, %Determina para onde você está olhando.
+            casa_segura/2, %Lugares que são seguros
+            casa_inexplorada/1,%Lugares para explorar caso o caminho principal falhou
+            turno/1,%contador de turno. O mais importante é o primeiro(fugir) e o 40(desistir de mais ouros)
+            ouro/1, %verifica se possui o ouro ou não
+            casa_adjacente/4, %Lista com as casas adjacentes, no formado casa_adjacente((origem),(final)).
+            caminhos_ja_passados/1, %Impede loop ao buscar o caminho.
+            modo_fuga/1
+		   ]).
 
 init_agent:-
-    writeln('agente inicializado...'),
-		retractall(localizacao(_,_)),
-		retractall(direcao(_)),
-		retractall(lugares_explorados(_,_)),
-		retractall(lugares_inexplorados(_,_)),
-		retractall(turno(_)),
-		retractall(ouro(_)),
-		retractall(modo_fuga(_)),
-		assert(localizacao(1,1)),
-		assert(direcao(0)),
-		assert(lugares_inexplorados(1,1)),
-		assert(turno(1)),
-		assert(ouro(0)),
-		assert(modo_fuga(0)).
-
+    		writeln('agente inicializado...'),
+			retractall(localizacao(_,_)),
+            retractall(angulo(_)),
+            retractall(casa_segura(_,_)),
+            retractall(casa_inexplorada(_)),
+            retractall(turno(_)),
+            retractall(ouro(_)),
+            retractall(casa_adjacente((_,_),(_,_))),
+            retractall(modo_fuga(_)),
+            assert(localizacao(1,1)),
+            assert(angulo(0)),
+            assert(casa_inexplorada([(1,1),(-5)])),
+            assert(casa_segura(1,1)),
+            assert(turno(1)),
+            assert(ouro(0)),
+            assert(modo_fuga(0)).
 restart_agent:-
     init_agent.
 
