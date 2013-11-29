@@ -168,4 +168,33 @@ impede_loop((A,B),(C,D)):-
                        assert(caminhos_ja_passados(Novalista)).
 
 
+%Essas funções atualizam a localizacao do Agente dependendo para onde ele está olhando.
+
+atualizador_localizacao:-
+       localizacao(X,Y),
+       angulo(0),
+       Xn is X+1,
+       retractall(localizacao(_,_)),
+       assert(localizacao(Xn,Y)).
+
+atualizador_localizacao:-
+       localizacao(X,Y),
+       angulo(1),
+       Yn is Y+1,
+       retractall(localizacao(_,_)),
+       assert(localizacao(X,Yn)).
+
+atualizador_localizacao:-
+       localizacao(X,Y),
+       angulo(2),
+       Xn is X-1,
+       retractall(localizacao(_,_)),
+       assert(localizacao(Xn,Y)).
+
+atualizador_localizacao:-
+       localizacao(X,Y),
+       angulo(3),
+       Yn is Y-1,
+       retractall(localizacao(_,_)),
+       assert(localizacao(X,Yn)).
 
