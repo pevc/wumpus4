@@ -36,7 +36,11 @@ run_agent(Pe,Ac):-
 	tempo_limite(Pe),
     correndo_tempo(Pe,Ac),
 	turno1(Pe),
-    desistindo(Pe,Ac).
+    desistindo(Pe,Ac);
+	
+        atualizador(Pe),
+        verificador(Pe),
+    movimento(Pe,Ac).
 pega_ouro([_,_,yes,_,_],grab):-
                                 ouro(O),
                                 On is O+1,
