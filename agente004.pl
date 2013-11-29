@@ -95,33 +95,47 @@ desistindo(_,Ac):-
                   !,
                   acao((A,B),Ac).
 
+
+
 atualizador([no,no,_,_,_]):-
-					localizacao(X,Y),
-					Xn is X+1,
-					Xl is X-1,
-					Yn is Y+1,
-					Yl is Y-1,
-					retract(lugares_inexplorados(X,Y)),
-					assert(lugares_explorados(X,Y)),
-					funcao_atualizador(Xn,Y),
-					funcao_atualizador(Xl,Y),
-					funcao_atualizador(Yn,X),
-					funcao_atualizador(Yl,X).
-
-					retractall(caminho_horizontal(_)),
-					retractall(caminho_vertical(_))
-					assert(caminho_horizontal(0)),
-					assert(caminho_horizontal(1)),	
-					assert(caminho_vertical(0))
-					assert(caminho_vertical(1)).
-
-%Se ele sentir um fed
+                           localizacao(X,Y),
+                           casa_inexplorada(Lista),
+                           delete(Lista,(X,Y),Novalista),
+                           retractall(casa_inexplorada(_)),
+                           assert(casa_inexplorada(Novalista)),
+                           Xn is X+1,
+                           Xl is X-1,
+                           Yn is Y+1,
+                           Yl is Y-1,
+                           turno(T),
+                           Tn is T+1,
+                           retract(turno(_)),
+                           assert(turno(Tn)),
+                           funcao_atualizador((X,Y),(X,Yl)),
+                           funcao_atualizador((X,Y),(Xl,Y)),
+                           funcao_atualizador((X,Y),(X,Yn)),
+                           funcao_atualizador((X,Y),(Xn,Y)).
 
 
-or ou um buraco, ele diz que a casa atual e segura e as outtas nao importantes.
-autalizador([_,_,_,_,_]):-
-					retract(lugares_inexplorados(X,Y)),
-					assert(lugares_explorados(X,Y)).
+%Se ele sentir um fedor ou um buraco, ele diz que a casa atual e segura e as outtas nao importantes.
+
+atualizador(_):-
+                localizacao(X,Y),
+                casa_inexplorada(Lista),
+                delete(Lista,(X,Y),Novalista),
+                retractall(casa_inexplorada(_)),
+                assert(casa_inexplorada(Novalista)),
+                turno(T),
+                Tn is T+1,
+                retractall(turno(_)),
+                assert(turno(Tn)).
+
+atualizador(_):- 
+				turno(T),
+                Tn is T+1,
+                retractall(turno(_)),
+                assert(turno(Tn)).
+
 
 %essas tres servem para verificar se as casas ao lado existem e nao sao exploradas.
 funcao_atualizador(X,Y):-
