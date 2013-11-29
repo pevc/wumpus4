@@ -139,92 +139,33 @@ atualizador(_):-
                 assert(turno(Tn)).
 
 
-%essas tres servem para verificar se as casas ao lado existem e nao sao exploradas.
-funcao_atualizador(X,Y):-
-					lugares_explorados(X,Y).
-funcao_atualizador(X,Y):-
-					X>0,
-					X<5,
-					Y>0,
-					Y<5,
-					assert(lugares_inexplorados(X,Y)).
-funcao_atualizador(X,Y).
-
-reto(1,1).
-reto(1,2).
-reto(1,3).
-reto(1,4).
-reto(2,4).
-reto(3,4).
-reto(3,3).
-reto(3,2).
-reto(3,1).
-reto(4,1).
-
-
-
-adjacente((A,B),(X,Y)):- Al is A+1,
-						X = Al,
-						Y = B,
-						reto(Al,B),
-
-%Essa parte, assim como as partes mais a direita da ementa, significa que ele vai e nao volta. Preciso colocar na funcao algo que reseta e da assert toda vez que ele chamar o caminho, e tentar simplificar.
-
-         		   		caminho_horizontal(0),
-				         retractall(caminho_horizontal(_)),
-				         assert(caminho_horizontal(0)),
-				         retractall(caminho_vertical(_)),
-				         assert(caminho_vertical(1)),
-				         assert(caminho_vertical(0)).
-
-adjacente((A,B),(X,Y)):- An is A-1,
-						X = An,
-						Y = B,
-						reto(An,B),
-						
-						caminho_horizontal(1),
-						retractall(caminho_horizontal(_)),
-						assert(caminho_horizontal(1)),
-						retractall(caminho_vertical(_)),
-						assert(caminho_vertical(1)),
-						assert(caminho_vertical(0)).
-
-adjacente((A,B),(X,Y)):- Bl is B+1,
-						X = A,
-						Y = Bl,
-						reto(A,Bl),
-
-						caminho_vertical(0),
-						retractall(caminho_vertical(_)),
-						assert(caminho_vertical(0)),
-						retractall(caminho_horizontal(_)),
-						assert(caminho_horizontal(1)),
-						assert(caminho_horizontal(0)).
-
-
-
-adjacente((A,B),(X,Y)):- Bn is B-1,
-						X = A,
-						Y = Bn,
-						reto(A,Bn),
-
-						caminho_vertical(1),
-						retractall(caminho_vertical(_)),
-						assert(caminho_vertical(1)),
-						retractall(caminho_horizontal(_)),
-						assert(caminho_horizontal(1)),
-						assert(caminho_horizontal(0)).
 							
+caminho((A,B),(C,D)):-
+                                         casa_adjacente((A,B),(C,D)),
+                     impede_loop((A,B),(C,D)).
 
-%Fazendo testes para verificar caminho de uma casa a outra.
+caminho((A,B),(C,D)):-
+                     casa_adjacente((A,B),(E,F)),
+                     impede_loop((A,B),(E,F)),
+                     caminho((E,F),(C,D)).
 
-caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente((A,B),(X,Y)).
-caminho((A,B),(X,Y)):- reto(A,B), reto(X,Y), adjacente((A,B),(E,F)),reto(E,F),!,caminho((E,F),(X,Y)).
+proximacasa((A,B),(C,D),(E,F)):-
+                                casa_adjacente((A,B),(E,F)),
+                                C is E,
+                                D is F.
 
-maisproximo((A,B),(C,D),(E,F)):-adjacente((A,B),(C,D)), caminho((C,D),(E,F)).
-
-% A ideia desse mais proximo eh verificar qual a casa mais proxima do agente que esteja no caminho, assim, ele apenas precisa se virar na direcao dele  e dar um 'go forward.
-
+proximacasa((A,B),(C,D),(E,F)):-
+                                casa_adjacente((A,B),(C,D)),
+                                                                retractall(camin                                                                                        hos_ja_passados(_)),
+                                                                assert(caminhos_                                                                                        ja_passados([[(50,50),(50,50)]])),
+                                impede_loop((A,B),(C,D)),
+                                caminho((C,D),(E,F)).
+impede_loop((A,B),(C,D)):-
+                       caminhos_ja_passados(Lista),
+                       intersection([[(A,B),(C,D)]],Lista,[]),
+                       append([[(A,B),(C,D)],[(C,D),(A,B)]],Lista,Novalista),
+                       retractall(caminhos_ja_passados(_)),
+                       assert(caminhos_ja_passados(Novalista)).
 
 
 
