@@ -27,22 +27,55 @@ restart_agent:-
     init_agent.
 
 run_agent(Pe,Ac):-
-    turno1(Pe,Ac).
+    pega_ouro(Pe,Ac);
+	tempo_limite(Pe),
+    correndo_tempo(Pe,Ac).
+pega_ouro([_,_,yes,_,_],grab):-
+                                ouro(O),
+                                On is O+1,
+                                retractall(ouro(_)),
+                                assert(ouro(On)),
+                                turno(T),
+                                Tn is T+1,
+                                retractall(turno(_)),
+                                assert(turno(Tn)).
+								turno(1),
+								retractall(ouro(_)),
+								assert(ouro(1)).
+tempo_limite(_):-
+                turno(T),
+                T>54,
+                retractall(modo_fuga(_)),
+                assert(modo_fuga(1)).
 
-turno1([_,_,yes,_,_],grab):-
-					turno(1),
-					retractall(ouro(_)),
-					assert(ouro(1)).
-turno1([_,_,_,_,_],climb):-
-					ouro(1).
-%esses dois verificam se ha ouro na casa 1/1, pega o ouro e sai.
+correndo_tempo(_,climb):-
+                        modo_fuga(1),
+                        localizacao(1,1).
+correndo_tempo(_,Ac):-
+                       modo_fuga(1),
+                       localizacao(X,Y),
+                       proximacasa((X,Y),(A,B),(1,1)),
+                       !,
+                       acao((A,B),Ac).
 
-turno1([yes,_,_,_,_],climb):-
-						turno(1),
-						writeln('Sua morte vira outro dia, Wumpus, tenha certeza disso.').
-turno1([_,yes,_,_,_],climb):-
-						turno(1),
-						writeln('Isso eh demais para mim,Adeus!').
+verificador(_):-
+                casa_inexplorada([-5]),
+                retractall(modo_fuga(_)),
+                assert(modo_fuga(1)).
+verificador(_).
+
+turno1([yes,_,_,_,_]):-
+                        turno(T),
+                        T<2,
+                        retractall(modo_fuga(_)),
+                        assert(modo_fuga(1)).
+turno1([_,yes,_,_,_]):-
+                        turno(T),
+                        T<2,
+                        retractall(modo_fuga(_)),
+                        assert(modo_fuga(1)).
+turno1(_).
+
 %Essas duas, pr sua vez, verificam se ha perigo ao redor das casas e se haver fogem.
 
 %analise a situacao das casas ao redor de uma casa sem brisa e sem fedor, os testes atuais estao perfeitos...
