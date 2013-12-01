@@ -2,13 +2,12 @@
 :- use_module(library(lists)).
 :- dynamic([localizacao/2, %determina onde você está.
             angulo/1, %Determina para onde você está olhando.
-            casa_segura/2, %Lugares que são seguros
-            casa_inexplorada/1,%Lugares para explorar caso o caminho principal falhou
+            casa_segura/2, %Lugares que você já explorou.
+            casa_inexplorada/1,%Lugares seguros mas inexplorados para explorar caso o caminho principal falhou
             turno/1,%contador de turno. O mais importante é o primeiro(fugir) e o 40(desistir de mais ouros)
-            ouro/1, %verifica se possui o ouro ou não
             casa_adjacente/4, %Lista com as casas adjacentes, no formado casa_adjacente((origem),(final)).
             caminhos_ja_passados/1, %Impede loop ao buscar o caminho.
-            modo_fuga/1
+            modo_fuga/1 %caso o turno limite seja atingido ou se não há mais casas para explorar, volta para a casa principal.
 		   ]).
 
 init_agent:-
@@ -18,7 +17,6 @@ init_agent:-
             retractall(casa_segura(_,_)),
             retractall(casa_inexplorada(_)),
             retractall(turno(_)),
-            retractall(ouro(_)),
             retractall(casa_adjacente((_,_),(_,_))),
             retractall(modo_fuga(_)),
             assert(localizacao(1,1)),
@@ -26,7 +24,6 @@ init_agent:-
             assert(casa_inexplorada([(1,1),(-5)])),
             assert(casa_segura(1,1)),
             assert(turno(1)),
-            assert(ouro(0)),
             assert(modo_fuga(0)).
 restart_agent:-
     init_agent.
@@ -41,34 +38,35 @@ run_agent(Pe,Ac):-
 					verificador(Pe),
    					movimento(Pe,Ac).
 
-pega_ouro([_,_,yes,_,_],grab):-
+pega_ouro([_,_,yes,_,_],grab):- %O agente tem prioridade para pegar o ouro todas as vezes que ele passa por ele, mesmo no modo fuga.
                                 turno(T),
                                 Tn is T+1,
                                 retractall(turno(_)),
                                 assert(turno(Tn)).
-tempo_limite(_):-
+tempo_limite(_):- %Tempo limite para ele buscar o ouro e ainda conseguir escapar. Caso o turno chegue no 54, ele começa a voltar para a base.
                 	turno(T),
                 	T>54,
                 	retractall(modo_fuga(_)),
                 	assert(modo_fuga(1)).
 
 
-correndo_tempo(_,climb):-
+correndo_tempo(_,climb):- %Caso esteja no modo de fuga e na casa 1,1, ele foge.
                        		modo_fuga(1),
                        		localizacao(1,1).
-correndo_tempo(_,Ac):-
+correndo_tempo(_,Ac):- %Senao, se estiver no modo de fuga ele anda até a casa (1,1).
                        modo_fuga(1),
                        localizacao(X,Y),
                        proximacasa((X,Y),(A,B),(1,1)),
                        !,
                        acao((A,B),Ac).
 
-verificador(_):-
+verificador(_):- %verifica se a lista de casas inexploradas acabou(Condicao é quando só tem -5 na lista) e ativa o modo de fuga.
                 casa_inexplorada([-5]),
                 retractall(modo_fuga(_)),
                 assert(modo_fuga(1)).
 verificador(_).
 
+%Caso exista casas perigosas ao redor da casa(1,1), ele dá prioridade a fugir.
 turno1([yes,_,_,_,_]):-
                         turno(T),
                         T<2,
@@ -81,9 +79,8 @@ turno1([_,yes,_,_,_]):-
                         assert(modo_fuga(1)).
 turno1(_).
 
-%Essas duas, pr sua vez, verificam se ha perigo ao redor das casas e se haver fogem.
 
-%analise a situacao das casas ao redor de uma casa sem brisa e sem fedor, os testes atuais estao perfeitos...
+%Caso o turno1 seja verdade, ele foge.
 desistindo(_,climb):-
                       modo_fuga(1),
                       localizacao(1,1).
@@ -96,7 +93,7 @@ desistindo(_,Ac):-
                   acao((A,B),Ac).
 
 
-
+%Se não hourver fedor na brisa atual, atualiza a casa atual para sagura e verifica se as casas ao redor são inexploradas e existentes.
 atualizador([no,no,_,_,_]):-
                            localizacao(X,Y),
                            casa_inexplorada(Lista),
@@ -130,6 +127,7 @@ atualizador(_):-
                 retractall(turno(_)),
                 assert(turno(Tn)).
 
+%Se ele estiver fazendo  backtracking, ele aumenta o turno por ação feita.
 atualizador(_):- 
 				turno(T),
                 Tn is T+1,
@@ -137,7 +135,7 @@ atualizador(_):-
                 assert(turno(Tn)).
 
 
-
+%Pega o valor da ultima casa inexplorada adicionada e verifica qual é a proxima casa que ele deve ir para se aproximar dessa casa. Caso seja necessario,muda a direcao para olhar na direcao dessa proxima casa. Senão anda para ela e repete o processo. 
 movimento(_,Ac):-
                 localizacao(X,Y),
                 casa_inexplorada(Lista),
@@ -219,6 +217,7 @@ acao((_,_),goforward):-
                       	retractall(casa_inexplorada(_)),
                       	assert(casa_inexplorada(Novalista)).
 							
+
 caminho((A,B),(C,D)):-
                      	casa_adjacente((A,B),(C,D)),
                      	impede_loop((A,B),(C,D)).
